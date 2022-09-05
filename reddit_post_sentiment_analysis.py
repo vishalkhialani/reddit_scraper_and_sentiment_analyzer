@@ -4,6 +4,8 @@ from textblob import TextBlob
 import os
 import datetime
 import numpy as np
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import re
 
 flair_sentiment = flair.models.TextClassifier.load('en-sentiment')
 fmt = '%Y-%m-%d %H:00:00'
@@ -24,8 +26,14 @@ def get_sentiment_val_for_flair(sentiments):
         total_sentiment = total_sentiment.replace('POSITIVE', '')
 
     total_sentiment = total_sentiment.replace('(', '').replace('[', '').replace(')', '').replace(']', '')
+    l = []
+    for t in total_sentiment.split():
+        try:
+            l.append(float(t))
+        except ValueError:
+            pass
 
-    val = float(total_sentiment)
+    val = float(l[0])
     if neg:
         return -val
     return val
@@ -118,7 +126,7 @@ def clean_sentiment_report(input_filename, output_filename):
 
 
 def bucketize_sentiment_report(input_filename, output_filename):
-    start_date_time_obj = datetime.datetime(2018, 1, 1, 0)
+    start_date_time_obj = datetime.datetime(2019, 11, 16, 0)
     end_date_time_obj = datetime.datetime(2019, 11, 20, 23)
     hr1 = datetime.timedelta(hours=1)
     curr_date_time_obj = start_date_time_obj
